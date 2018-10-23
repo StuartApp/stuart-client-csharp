@@ -24,6 +24,9 @@ namespace StuartDelivery.Models.Job.Request
         [JsonProperty(PropertyName = "contact")]
         public Contact Contact { get; set; }
 
+        /// <summary>
+        /// Access codes information at the origin.
+        /// </summary>
         [JsonProperty(PropertyName = "access_codes")]
         public IEnumerable<AccessCode> AccessCodes { get; set; }
     }

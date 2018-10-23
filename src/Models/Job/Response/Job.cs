@@ -35,16 +35,23 @@ namespace StuartDelivery.Models.Job.Response
         [JsonProperty(PropertyName = "comment")]
         public string Comment { get; set; }
 
-        //Total Job distance, in kilometer.
+        /// <summary>
+        /// Total Job distance, in kilometer.
+        /// </summary>
         [JsonProperty(PropertyName = "distance")]
         [JsonRequired]
         public double Distance { get; set; }
 
-        //Total Job duration estimation, in minute.
+        /// <summary>
+        /// Total Job duration estimation, in minute.
+        /// </summary>
         [JsonProperty(PropertyName = "duration")]
         [JsonRequired]
         public int Duration { get; set; }
 
+        /// <summary>
+        /// Deliveries that has been computed.
+        /// </summary>
         [JsonProperty(PropertyName = "deliveries")]
         [JsonRequired]
         public IEnumerable<Delivery> Deliveries { get; set; }

@@ -4,25 +4,35 @@ namespace StuartDelivery.Models.Job.Response
 {
     public class Delivery
     {
-        //The Delivery Id.
+        /// <summary>
+        /// The Delivery Id.
+        /// </summary>
         [JsonProperty(PropertyName = "id")]
         [JsonRequired]
         public int Id { get; set; }
 
-        //The Delivery status.
+        /// <summary>
+        /// The Delivery status.
+        /// </summary>
         [JsonProperty(PropertyName = "status")]
         [JsonRequired]
         public string Status { get; set; }
 
-        //A datetime (ISO 8601) indicating when your package has been picked.
+        /// <summary>
+        /// A datetime (ISO 8601) indicating when your package has been picked.
+        /// </summary>
         [JsonProperty(PropertyName = "picked_at")]
         public string PickedAt { get; set; }
 
-        //A datetime(ISO 8601) indicating when your package has been delivered.
+        /// <summary>
+        /// A datetime(ISO 8601) indicating when your package has been delivered.
+        /// </summary>
         [JsonProperty(PropertyName = "delivered_at")]
         public string DeliveredAt { get; set; }
 
-        //The Delivery tracking URL.
+        /// <summary>
+        /// The Delivery tracking URL.
+        /// </summary>
         [JsonProperty(PropertyName = "tracking_url")]
         [JsonRequired]
         public string TrackingUrl { get; set; }

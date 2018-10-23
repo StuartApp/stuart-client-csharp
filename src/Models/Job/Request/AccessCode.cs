@@ -6,22 +6,30 @@ namespace StuartDelivery.Models.Job.Request
 {
     public class AccessCode
     {
-        //Access code
+        /// <summary>
+        /// Access code
+        /// </summary>
         [JsonProperty(PropertyName = "code")]
         [JsonRequired]
         public string Code { get; set; }
 
-        //Access code type Allowed Values: text, qr_text
+        /// <summary>
+        /// Access code type Allowed Values: text, qr_text
+        /// </summary>
         [JsonProperty(PropertyName = "type")]
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonRequired]
         public AccessCodeType Type { get; set; }
 
-        //Access code title
+        /// <summary>
+        /// Access code title
+        /// </summary>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 
-        //Access code instructions
+        /// <summary>
+        /// Access code instructions
+        /// </summary>
         [JsonProperty(PropertyName = "instructions")]
         public string Instructions { get; set; }
     }

@@ -8,11 +8,15 @@ namespace StuartDelivery.Models.Job.Request
         [JsonRequired]
         public int Id { get; set; }
 
-        //Unique client order reference number.
+        /// <summary>
+        /// Unique client order reference number.
+        /// </summary>
         [JsonProperty(PropertyName = "client_reference")]
         public string ClientReference { get; set; }
 
-        //A string that allows you to give more information on the package itself so it can be identified better.
+        /// <summary>
+        /// A string that allows you to give more information on the package itself so it can be identified better.
+        /// </summary>
         [JsonProperty(PropertyName = "package_description")]
         public string PackageDescription { get; set; }
 
