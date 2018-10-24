@@ -305,7 +305,7 @@ namespace StuartDeliveryTests
             var job = await StuartApi.Job.CreateJob(jobRequest).ConfigureAwait(false);
 
             //Act
-            await StuartApi.Job.CancelDelivery(job.Deliveries.First().Id);
+            await StuartApi.Job.CancelDelivery(job.Deliveries.First().Id).ConfigureAwait(false);
             var canceledDeliveryJob = await StuartApi.Job.GetJob(job.Id).ConfigureAwait(false);
 
             //Assert
