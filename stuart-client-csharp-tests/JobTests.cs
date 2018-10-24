@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StuartDelivery.Models.Job.Enums;
 using JobRequest = StuartDelivery.Models.Job.Request;
-using JobResponse = StuartDelivery.Models.Job.Response;
 
-namespace StuartDeliveryUnitTests
+namespace StuartDeliveryTests
 {
     [TestClass]
     public class JobTests : BaseTests

@@ -1,6 +1,6 @@
 .vs/
 packages/
-src/bin/
-src/obj/
-tests/bin/
-tests/obj/
+stuart-client-csharp/bin/
+stuart-client-csharp/obj/
+stuart-client-csharp-tests/bin/
+stuart-client-csharp-tests/obj/

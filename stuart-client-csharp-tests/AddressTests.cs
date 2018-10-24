@@ -6,7 +6,7 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StuartDelivery.Models.Address;
 
-namespace StuartDeliveryUnitTests
+namespace StuartDeliveryTests
 {
     [TestClass]
     public class AddressTests : BaseTests

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("StuartDelivery")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("stuart-client-csharp")]
+[assembly: AssemblyDescription("Stuart Delivery API C# Client")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("StuartDelivery")]
+[assembly: AssemblyCompany("OrderYOYO")]
+[assembly: AssemblyProduct("stuart-client-csharp")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("1f47c520-8790-41ba-8a15-f93a1ed312c0")]
+[assembly: Guid("f46b2889-43f1-4fca-b3bd-e31e16d0ef18")]
 
 // Version information for an assembly consists of the following four values:
 //

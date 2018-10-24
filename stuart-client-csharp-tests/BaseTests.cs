@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StuartDelivery;
 
-namespace StuartDeliveryUnitTests
+namespace StuartDeliveryTests
 {
     [TestClass]
     public class BaseTests
@@ -11,8 +11,8 @@ namespace StuartDeliveryUnitTests
         [TestInitialize]
         public virtual void TestInit()
         {
-            var clientId = "<your_client_id>";
-            var clientSecret = "<your_client_secret>";
+            var clientId = "";
+            var clientSecret = "";
 
             //Please always use Sandbox environment for tests purposes
             var environment = Environment.Sandbox;
