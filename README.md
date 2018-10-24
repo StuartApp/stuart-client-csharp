@@ -1,4 +1,5 @@
 # Stuart C# Client
+Created and provided by [OrderYOYO](https://orderyoyo.com)
 
 For a complete documentation of all endpoints offered by the Stuart API, you can visit [Stuart API documentation](https://stuart.api-docs.io).
 
