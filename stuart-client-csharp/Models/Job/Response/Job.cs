@@ -61,7 +61,6 @@ namespace StuartDelivery.Models.Job.Response
         public Pricing Pricing { get; set; }
 
         [JsonProperty(PropertyName = "driver")]
-        [JsonRequired]
         public Driver Driver { get; set; }
     }
 }
