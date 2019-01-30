@@ -12,7 +12,7 @@ namespace StuartDelivery.Models.Job.Request
         /// </summary>
         [JsonProperty(PropertyName = "package_type")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public PackageSizeType PackageType { get; set; }
+        public PackageSizeType? PackageType { get; set; }
 
         /// <summary>
         /// A string that allows you to give more information on the package itself so it can be identified better.
