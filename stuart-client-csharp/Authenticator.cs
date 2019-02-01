@@ -50,7 +50,7 @@ namespace StuartDelivery
             if (response.IsSuccessStatusCode)
                 tokenResponse = await response.Content.ReadAsAsync<TokenSuccessResponse>().ConfigureAwait(false);
             else
-                throw new HttpRequestException($"Access token request failed with message: {response.Content.ReadAsAsync<ErrorResponce>().Result.ErrorDescription}");
+                throw new HttpRequestException($"Access token request failed with message: {response.Content.ReadAsAsync<ErrorResponse>().Result.ErrorDescription}");
 
             return new OAuth2AccessToken()
             {

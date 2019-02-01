@@ -2,7 +2,7 @@
 
 namespace StuartDelivery.Models
 {
-    public class ErrorResponce
+    public class ErrorResponse
     {
         [JsonProperty(PropertyName = "error")]
         public string Error { get; set; }

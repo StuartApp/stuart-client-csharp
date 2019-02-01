@@ -15,7 +15,7 @@ namespace StuartDelivery.Concrete
 {
     class Job : IJob
     {
-        private WebClient _webClient;
+        private readonly WebClient _webClient;
 
         public Job(WebClient webClient)
         {
@@ -27,7 +27,7 @@ namespace StuartDelivery.Concrete
             var result = await _webClient.PostAsync($"/v2/deliveries/{deliveryId}/cancel").ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             { 
-                var error = result.Content.ReadAsAsync<ErrorResponce>().Result;
+                var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
                 throw new HttpRequestException($"Canceling delivery failed with message: {error.Message}");
             }
         }
@@ -37,7 +37,7 @@ namespace StuartDelivery.Concrete
             var result = await _webClient.PostAsync($"/v2/jobs/{jobId}/cancel").ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {
-                var error = result.Content.ReadAsAsync<ErrorResponce>().Result;
+                var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
                 throw new HttpRequestException($"Canceling job failed with message: {error.Message}");
             }
         }
@@ -47,11 +47,9 @@ namespace StuartDelivery.Concrete
             var result = await _webClient.PostAsync($"/v2/jobs", job).ConfigureAwait(false);
             if (result.IsSuccessStatusCode)
                 return await result.Content.ReadAsAsync<JobResponse.Job>().ConfigureAwait(false);
-            else
-            {
-                var error = result.Content.ReadAsAsync<ErrorResponce>().Result;
-                throw new HttpRequestException($"Creating job failed with message: {error.Message}");
-            }
+
+            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
+            throw new HttpRequestException($"Creating job failed with message: {error.Message}");
         }
 
         public async Task<string> GetDriversPhone(int deliveryId)
@@ -59,11 +57,9 @@ namespace StuartDelivery.Concrete
             var result = await _webClient.GetAsync($"/v2/deliveries/{deliveryId}/phone_number").ConfigureAwait(false);
             if (result.IsSuccessStatusCode)
                 return await result.Content.ReadAsAsync<string>().ConfigureAwait(false);
-            else
-            {
-                var error = result.Content.ReadAsAsync<ErrorResponce>().Result;
-                throw new HttpRequestException($"Getting driver's phone failed with message: {error.Message}");
-            }
+            
+            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
+            throw new HttpRequestException($"Getting driver's phone failed with message: {error.Message}");
         }
 
         public async Task<JobResponse.Job> GetJob(int id)
@@ -71,11 +67,9 @@ namespace StuartDelivery.Concrete
             var result = await _webClient.GetAsync($"/v2/jobs/{id}").ConfigureAwait(false);
             if (result.IsSuccessStatusCode)
                 return await result.Content.ReadAsAsync<JobResponse.Job>().ConfigureAwait(false);
-            else
-            {
-                var error = result.Content.ReadAsAsync<ErrorResponce>().Result;
-                throw new HttpRequestException($"Getting job failed with message: {error.Message}");
-            }
+
+            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
+            throw new HttpRequestException($"Getting job failed with message: {error.Message}");
         }
 
         public async Task<IEnumerable<JobResponse.Job>> GetJobs(string status = "", int? page = null, int? perPage = null, string clientReference = "")
@@ -92,11 +86,9 @@ namespace StuartDelivery.Concrete
             var result = await _webClient.GetAsync($"/v2/jobs{(string.IsNullOrEmpty(urlParams) ? string.Empty : "?" + urlParams)}").ConfigureAwait(false);
             if (result.IsSuccessStatusCode)
                 return await result.Content.ReadAsAsync<IEnumerable<JobResponse.Job>>().ConfigureAwait(false);
-            else
-            {
-                var error = result.Content.ReadAsAsync<ErrorResponce>().Result;
-                throw new HttpRequestException($"Getting jobs failed with message: {error.Message}");
-            }
+
+            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
+            throw new HttpRequestException($"Getting jobs failed with message: {error.Message}");
         }
 
         public async Task<JobResponse.SchedulingSlots> GetSchedulingSlots(string city, ScheduleType type, DateTime date)
@@ -104,11 +96,9 @@ namespace StuartDelivery.Concrete
             var result = await _webClient.GetAsync($"/v2/jobs/schedules/{WebUtility.UrlEncode(city)}/{Enum.GetName(typeof(ScheduleType), type)}/{date.ToString("yyyy-MM-dd")}").ConfigureAwait(false);
             if (result.IsSuccessStatusCode)
                 return await result.Content.ReadAsAsync<JobResponse.SchedulingSlots>().ConfigureAwait(false);
-            else
-            {
-                var error = result.Content.ReadAsAsync<ErrorResponce>().Result;
-                throw new HttpRequestException($"Getting scheduling slots failed with message: {error.Message}");
-            }
+
+            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
+            throw new HttpRequestException($"Getting scheduling slots failed with message: {error.Message}");
         }
 
         public async Task<int> RequestEta(JobRequest.JobRequest job)
@@ -119,11 +109,9 @@ namespace StuartDelivery.Concrete
                 var response = await result.Content.ReadAsAsync<ExpandoObject>().ConfigureAwait(false);
                 return Convert.ToInt32(response.FirstOrDefault(x => x.Key == "eta").Value);
             }
-            else
-            {
-                var error = result.Content.ReadAsAsync<ErrorResponce>().Result;
-                throw new HttpRequestException($"Getting ETA failed with message: {error.Message}");
-            }
+
+            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
+            throw new HttpRequestException($"Getting ETA failed with message: {error.Message}");
         }
 
         public async Task<JobResponse.SimplePricing> RequestJobPricing(JobRequest.JobRequest job)
@@ -131,11 +119,9 @@ namespace StuartDelivery.Concrete
             var result = await _webClient.PostAsync($"/v2/jobs/pricing", job).ConfigureAwait(false);
             if (result.IsSuccessStatusCode)
                 return await result.Content.ReadAsAsync<JobResponse.SimplePricing>().ConfigureAwait(false);
-            else
-            {
-                var error = result.Content.ReadAsAsync<ErrorResponce>().Result;
-                throw new HttpRequestException($"Getting job pricing failed with message: {error.Message}");
-            }
+
+            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
+            throw new HttpRequestException($"Getting job pricing failed with message: {error.Message}");
         }
 
         public async Task UpdateJob(int id, JobRequest.UpdateJobRequest updatedJob)
@@ -143,7 +129,7 @@ namespace StuartDelivery.Concrete
             var result = await _webClient.PatchAsync($"/v2/jobs/{id}", updatedJob).ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {
-                var error = result.Content.ReadAsAsync<ErrorResponce>().Result;
+                var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
                 throw new HttpRequestException($"Patching job failed with message: {error.Message}");
             }
         }
@@ -156,11 +142,9 @@ namespace StuartDelivery.Concrete
                 var response = await result.Content.ReadAsAsync<ExpandoObject>().ConfigureAwait(false);
                 return (bool)response.FirstOrDefault(x => x.Key == "valid").Value;
             }
-            else
-            {
-                var error = result.Content.ReadAsAsync<ErrorResponce>().Result;
-                throw new HttpRequestException($"Validation failed with message: {error.Message}");
-            }
+
+            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
+            throw new HttpRequestException($"Validation failed with message: {error.Message}");
         }
     }
 }
