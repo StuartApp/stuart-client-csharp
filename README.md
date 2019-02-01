@@ -7,7 +7,7 @@ For a complete documentation of all endpoints offered by the Stuart API, you can
 Via NuGet Package Manager:
 
 ``` bash
-$ PM> Install-Package stuart-client-csharp -Version 1.0.0
+$ PM> Install-Package stuart-client-csharp -Version 1.3.1
 ```
 
 ## Usage
@@ -32,7 +32,7 @@ $ PM> Install-Package stuart-client-csharp -Version 1.0.0
 var clientId = "<put_your_ID_here>"; // can be found here: https://admin-sandbox.stuart.com/client/api
 var clientSecret = "<put_your_secret_here>"; // can be found here: https://admin-sandbox.stuart.com/client/api
 var environment = Environment.Sandbox;
-var StuartApi = StuartApi.Initialize(environment, clientId, clientSecret);
+var stuartApi = StuartApi.Initialize(environment, clientId, clientSecret);
 ```
 
 ### Create a Job
