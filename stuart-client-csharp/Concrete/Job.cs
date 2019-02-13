@@ -13,7 +13,7 @@ using JobResponse = StuartDelivery.Models.Job.Response;
 
 namespace StuartDelivery.Concrete
 {
-    class Job : IJob
+    public class Job : IJob
     {
         private readonly WebClient _webClient;
 
@@ -22,57 +22,112 @@ namespace StuartDelivery.Concrete
             _webClient = webClient;
         }
 
-        public async Task CancelDelivery(int deliveryId)
+        public async Task<Result> CancelDelivery(int deliveryId)
         {
-            var result = await _webClient.PostAsync($"/v2/deliveries/{deliveryId}/cancel").ConfigureAwait(false);
-            if (!result.IsSuccessStatusCode)
-            { 
-                var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-                throw new HttpRequestException($"Canceling delivery failed with message: {error.Message}");
-            }
-        }
-
-        public async Task CancelJob(int jobId)
-        {
-            var result = await _webClient.PostAsync($"/v2/jobs/{jobId}/cancel").ConfigureAwait(false);
-            if (!result.IsSuccessStatusCode)
+            try
             {
-                var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-                throw new HttpRequestException($"Canceling job failed with message: {error.Message}");
+                var response = await _webClient.PostAsync($"/v2/deliveries/{deliveryId}/cancel").ConfigureAwait(false);
+                var result = new Result();
+
+                if (response.IsSuccessStatusCode)
+                    return result;
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(CancelDelivery)} failed", e);
             }
         }
 
-        public async Task<JobResponse.Job> CreateJob(JobRequest.JobRequest job)
+        public async Task<Result> CancelJob(int jobId)
         {
-            var result = await _webClient.PostAsync($"/v2/jobs", job).ConfigureAwait(false);
-            if (result.IsSuccessStatusCode)
-                return await result.Content.ReadAsAsync<JobResponse.Job>().ConfigureAwait(false);
+            try
+            {
+                var response = await _webClient.PostAsync($"/v2/jobs/{jobId}/cancel").ConfigureAwait(false);
+                var result = new Result();
 
-            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-            throw new HttpRequestException($"Creating job failed with message: {error.Message}");
+                if (response.IsSuccessStatusCode)
+                    return result;
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(CancelJob)} failed", e);
+            }
         }
 
-        public async Task<string> GetDriversPhone(int deliveryId)
+        public async Task<Result<JobResponse.Job>> CreateJob(JobRequest.JobRequest job)
         {
-            var result = await _webClient.GetAsync($"/v2/deliveries/{deliveryId}/phone_number").ConfigureAwait(false);
-            if (result.IsSuccessStatusCode)
-                return await result.Content.ReadAsAsync<string>().ConfigureAwait(false);
-            
-            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-            throw new HttpRequestException($"Getting driver's phone failed with message: {error.Message}");
+            try
+            {
+                var response = await _webClient.PostAsync($"/v2/jobs", job).ConfigureAwait(false);
+                var result = new Result<JobResponse.Job>();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    result.Data = await response.Content.ReadAsAsync<JobResponse.Job>().ConfigureAwait(false);
+                    return result;
+                }
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(CreateJob)} failed", e);
+            }
         }
 
-        public async Task<JobResponse.Job> GetJob(int id)
+        public async Task<Result<string>> GetDriversPhone(int deliveryId)
         {
-            var result = await _webClient.GetAsync($"/v2/jobs/{id}").ConfigureAwait(false);
-            if (result.IsSuccessStatusCode)
-                return await result.Content.ReadAsAsync<JobResponse.Job>().ConfigureAwait(false);
+            try
+            {
+                var response = await _webClient.GetAsync($"/v2/deliveries/{deliveryId}/phone_number").ConfigureAwait(false);
+                var result = new Result<string>();
+                if (response.IsSuccessStatusCode)
+                {
+                    result.Data = await response.Content.ReadAsAsync<string>().ConfigureAwait(false);
+                    return result;
+                }
 
-            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-            throw new HttpRequestException($"Getting job failed with message: {error.Message}");
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(GetDriversPhone)} failed", e);
+            }
         }
 
-        public async Task<IEnumerable<JobResponse.Job>> GetJobs(string status = "", int? page = null, int? perPage = null, string clientReference = "")
+        public async Task<Result<JobResponse.Job>> GetJob(int id)
+        {
+            try
+            {
+                var response = await _webClient.GetAsync($"/v2/jobs/{id}").ConfigureAwait(false);
+                var result = new Result<JobResponse.Job>();
+                if (response.IsSuccessStatusCode)
+                {
+                    result.Data = await response.Content.ReadAsAsync<JobResponse.Job>().ConfigureAwait(false);
+                    return result;
+                }
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(GetJob)} failed", e);
+            }
+        }
+
+        public async Task<Result<IEnumerable<JobResponse.Job>>> GetJobs(string status = "", int? page = null, int? perPage = null, string clientReference = "")
         {
             var uriParams = new List<string>
             {
@@ -82,69 +137,133 @@ namespace StuartDelivery.Concrete
                 $"{(string.IsNullOrEmpty(clientReference) ? string.Empty : "client_reference=" + clientReference)}"
             };
 
-            var urlParams = string.Join("&", uriParams.Where(x => !string.IsNullOrEmpty(x)));
-            var result = await _webClient.GetAsync($"/v2/jobs{(string.IsNullOrEmpty(urlParams) ? string.Empty : "?" + urlParams)}").ConfigureAwait(false);
-            if (result.IsSuccessStatusCode)
-                return await result.Content.ReadAsAsync<IEnumerable<JobResponse.Job>>().ConfigureAwait(false);
-
-            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-            throw new HttpRequestException($"Getting jobs failed with message: {error.Message}");
-        }
-
-        public async Task<JobResponse.SchedulingSlots> GetSchedulingSlots(string city, ScheduleType type, DateTime date)
-        {
-            var result = await _webClient.GetAsync($"/v2/jobs/schedules/{WebUtility.UrlEncode(city)}/{Enum.GetName(typeof(ScheduleType), type)}/{date.ToString("yyyy-MM-dd")}").ConfigureAwait(false);
-            if (result.IsSuccessStatusCode)
-                return await result.Content.ReadAsAsync<JobResponse.SchedulingSlots>().ConfigureAwait(false);
-
-            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-            throw new HttpRequestException($"Getting scheduling slots failed with message: {error.Message}");
-        }
-
-        public async Task<int> RequestEta(JobRequest.JobRequest job)
-        {
-            var result = await _webClient.PostAsync($"/v2/jobs/eta", job).ConfigureAwait(false);
-            if (result.IsSuccessStatusCode)
+            try
             {
-                var response = await result.Content.ReadAsAsync<ExpandoObject>().ConfigureAwait(false);
-                return Convert.ToInt32(response.FirstOrDefault(x => x.Key == "eta").Value);
+                var urlParams = string.Join("&", uriParams.Where(x => !string.IsNullOrEmpty(x)));
+                var response = await _webClient.GetAsync($"/v2/jobs{(string.IsNullOrEmpty(urlParams) ? string.Empty : "?" + urlParams)}").ConfigureAwait(false);
+                var result = new Result<IEnumerable<JobResponse.Job>>();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    result.Data = await response.Content.ReadAsAsync<IEnumerable<JobResponse.Job>>().ConfigureAwait(false);
+                    return result;
+                }
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+                return result;
             }
-
-            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-            throw new HttpRequestException($"Getting ETA failed with message: {error.Message}");
-        }
-
-        public async Task<JobResponse.SimplePricing> RequestJobPricing(JobRequest.JobRequest job)
-        {
-            var result = await _webClient.PostAsync($"/v2/jobs/pricing", job).ConfigureAwait(false);
-            if (result.IsSuccessStatusCode)
-                return await result.Content.ReadAsAsync<JobResponse.SimplePricing>().ConfigureAwait(false);
-
-            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-            throw new HttpRequestException($"Getting job pricing failed with message: {error.Message}");
-        }
-
-        public async Task UpdateJob(int id, JobRequest.UpdateJobRequest updatedJob)
-        {
-            var result = await _webClient.PatchAsync($"/v2/jobs/{id}", updatedJob).ConfigureAwait(false);
-            if (!result.IsSuccessStatusCode)
+            catch (Exception e)
             {
-                var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-                throw new HttpRequestException($"Patching job failed with message: {error.Message}");
+                throw new HttpRequestException($"{nameof(GetJobs)} failed", e);
             }
         }
 
-        public async Task<bool> ValidateParameters(JobRequest.JobRequest job)
+        public async Task<Result<JobResponse.SchedulingSlots>> GetSchedulingSlots(string city, ScheduleType type, DateTime date)
         {
-            var result = await _webClient.PostAsync($"/v2/jobs/validate", job).ConfigureAwait(false);
-            if (result.IsSuccessStatusCode)
+            try
             {
-                var response = await result.Content.ReadAsAsync<ExpandoObject>().ConfigureAwait(false);
-                return (bool)response.FirstOrDefault(x => x.Key == "valid").Value;
-            }
+                var response = await _webClient.GetAsync($"/v2/jobs/schedules/{WebUtility.UrlEncode(city)}/{Enum.GetName(typeof(ScheduleType), type)}/{date:yyyy-MM-dd}").ConfigureAwait(false);
+                var result = new Result<JobResponse.SchedulingSlots>();
 
-            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-            throw new HttpRequestException($"Validation failed with message: {error.Message}");
+                if (response.IsSuccessStatusCode)
+                {
+                    result.Data = await response.Content.ReadAsAsync<JobResponse.SchedulingSlots>().ConfigureAwait(false);
+                    return result;
+                }
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(GetSchedulingSlots)} failed", e);
+            }
+        }
+
+        public async Task<Result<int>> RequestEta(JobRequest.JobRequest job)
+        {
+            try
+            {
+                var response = await _webClient.PostAsync($"/v2/jobs/eta", job).ConfigureAwait(false);
+                var result = new Result<int>();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var obj = await response.Content.ReadAsAsync<ExpandoObject>().ConfigureAwait(false);
+                    result.Data = Convert.ToInt32(obj.FirstOrDefault(x => x.Key == "eta").Value);
+                    return result;
+                }
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(RequestEta)} failed", e);
+            }
+        }
+
+        public async Task<Result<JobResponse.SimplePricing>> RequestJobPricing(JobRequest.JobRequest job)
+        {
+            try
+            {
+                var response = await _webClient.PostAsync($"/v2/jobs/pricing", job).ConfigureAwait(false);
+                var result = new Result<JobResponse.SimplePricing>();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    result.Data = await response.Content.ReadAsAsync<JobResponse.SimplePricing>().ConfigureAwait(false);
+                    return result;
+                }
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(RequestJobPricing)} failed", e);
+            }
+        }
+
+        public async Task<Result> UpdateJob(int id, JobRequest.UpdateJobRequest updatedJob)
+        {
+            try
+            {
+                var response = await _webClient.PatchAsync($"/v2/jobs/{id}", updatedJob).ConfigureAwait(false);
+                var result = new Result();
+
+                if (response.IsSuccessStatusCode)
+                    return result;
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(UpdateJob)} failed", e);
+            }
+        }
+
+        public async Task<Result<bool>> ValidateParameters(JobRequest.JobRequest job)
+        {
+            try
+            {
+                var response = await _webClient.PostAsync($"/v2/jobs/validate", job).ConfigureAwait(false);
+                var result = new Result<bool>();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var obj = await response.Content.ReadAsAsync<ExpandoObject>().ConfigureAwait(false);
+                    result.Data = (bool)obj.FirstOrDefault(x => x.Key == "valid").Value;
+                }
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(ValidateParameters)} failed", e);
+            }
         }
     }
 }

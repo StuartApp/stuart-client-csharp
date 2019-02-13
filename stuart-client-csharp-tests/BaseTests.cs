@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using StuartDelivery;
 
-namespace StuartDeliveryTests
+namespace StuartDelivery.Tests
 {
     [TestClass]
     public class BaseTests

@@ -1,6 +1,6 @@
 ﻿namespace StuartDelivery.Models.Address
 {
-    public enum RecivingType
+    public enum ReceivingType
     {
         delivering,
         picking

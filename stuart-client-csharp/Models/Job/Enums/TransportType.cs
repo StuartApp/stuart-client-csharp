@@ -2,6 +2,7 @@
 {
     public enum TransportType
     {
+        walk,
         bike,
         cargobike,
         cargobikexl,
