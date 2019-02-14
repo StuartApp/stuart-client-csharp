@@ -19,41 +19,76 @@ namespace StuartDelivery.Concrete
             _webClient = webClient;
         }
 
-        public async Task<ParcelShopsResponse> GetParcelShops(string address, DateTime date)
+        public async Task<Result<ParcelShopsResponse>> GetParcelShops(string address, DateTime date)
         {
-            var urlParams = $"?address={WebUtility.UrlEncode(address)}&date={date.ToString("yyyy-MM-dd")}";
-            var result = await _webClient.GetAsync($"/v2/parcel_shops/around/schedule{urlParams}").ConfigureAwait(false);
-            if (result.IsSuccessStatusCode)
-                return await result.Content.ReadAsAsync<ParcelShopsResponse>().ConfigureAwait(false);
-
-            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-            throw new HttpRequestException($"Getting parcel shops failed with message: {error.Message}");
-        }
-
-        public async Task<ZoneResponse> GetZoneCoverage(string city, RecivingType recivingType = RecivingType.picking)
-        {
-            var urlParams = $"{city}?type={Enum.GetName(typeof(RecivingType), recivingType)}";
-            var result = await _webClient.GetAsync($"/v2/areas/{urlParams}").ConfigureAwait(false);
-            if (result.IsSuccessStatusCode)
-                return await result.Content.ReadAsAsync<ZoneResponse>().ConfigureAwait(false);
-
-            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-            throw new HttpRequestException($"Getting zone coverage failed with message: {error.Error}");
-        }
-
-        public async Task<bool> Validate(string address, RecivingType recivingType, string phone = "")
-        {
-            var urlParams = $"?type={Enum.GetName(typeof(RecivingType), recivingType)}&address={WebUtility.UrlEncode(address)}";
-            urlParams += phone != string.Empty ? $"&phone={phone}" : string.Empty;
-            var result = await _webClient.GetAsync($"/v2/addresses/validate{urlParams}").ConfigureAwait(false);
-            if (result.IsSuccessStatusCode)
+            try
             {
-                var response = await result.Content.ReadAsAsync<ExpandoObject>().ConfigureAwait(false);
-                return (bool)response.FirstOrDefault(x => x.Key == "success").Value;
-            }
+                var urlParams = $"?address={WebUtility.UrlEncode(address)}&date={date:yyyy-MM-dd}";
+                var response = await _webClient.GetAsync($"/v2/parcel_shops/around/schedule{urlParams}").ConfigureAwait(false);
+                var result = new Result<ParcelShopsResponse>();
 
-            var error = result.Content.ReadAsAsync<ErrorResponse>().Result;
-            throw new HttpRequestException($"Address validation failed with message: {error.Message}");
+                if (response.IsSuccessStatusCode)
+                {
+                    result.Data = await response.Content.ReadAsAsync<ParcelShopsResponse>().ConfigureAwait(false);
+                    return result;
+                }
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(GetParcelShops)} failed", e);
+            }
+        }
+
+        public async Task<Result<ZoneResponse>> GetZoneCoverage(string city,
+            ReceivingType receivingType = ReceivingType.picking)
+        {
+            try
+            {
+                var urlParams = $"{city}?type={Enum.GetName(typeof(ReceivingType), receivingType)}";
+                var response = await _webClient.GetAsync($"/v2/areas/{urlParams}").ConfigureAwait(false);
+                var result = new Result<ZoneResponse>();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    result.Data = await response.Content.ReadAsAsync<ZoneResponse>().ConfigureAwait(false);
+                    return result;
+                }
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(GetZoneCoverage)} failed", e);
+            }
+        }
+
+        public async Task<Result<bool>> Validate(string address, ReceivingType receivingType, string phone = "")
+        {
+            try
+            {
+                var urlParams = $"?type={Enum.GetName(typeof(ReceivingType), receivingType)}&address={WebUtility.UrlEncode(address)}";
+                urlParams += phone != string.Empty ? $"&phone={phone}" : string.Empty;
+                var response = await _webClient.GetAsync($"/v2/addresses/validate{urlParams}").ConfigureAwait(false);
+                var result = new Result<bool>();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var obj = await response.Content.ReadAsAsync<ExpandoObject>().ConfigureAwait(false);
+                    result.Data = (bool)obj.FirstOrDefault(x => x.Key == "success").Value;
+                    return result;
+                }
+
+                result.Error = response.Content.ReadAsAsync<ErrorResponse>().Result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new HttpRequestException($"{nameof(Validate)} failed", e);
+            }
         }
     }
 }

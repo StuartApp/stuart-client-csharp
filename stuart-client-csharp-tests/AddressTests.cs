@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StuartDelivery.Models.Address;
 
-namespace StuartDeliveryTests
+namespace StuartDelivery.Tests
 {
     [TestClass]
     public class AddressTests : BaseTests
@@ -15,55 +14,58 @@ namespace StuartDeliveryTests
         public async Task AddressValidate_Should_ReturnTrue()
         {
             //Arrange
-            var address = "29 rue de Rivoli 75004 Paris";
-            var recivingType = RecivingType.delivering;
+            const string address = "29 rue de Rivoli 75004 Paris";
+            const ReceivingType receivingType = ReceivingType.delivering;
 
             //Act
-            var result = await StuartApi.Address.Validate(address, recivingType).ConfigureAwait(false);
+            var result = await StuartApi.Address.Validate(address, receivingType).ConfigureAwait(false);
 
             //Assert
-            result.Should().BeTrue();
+            result.Data.Should().BeTrue();
         }
 
         [TestMethod]
-        public async Task AddressValidate_Should_ReturnTrue_WhenAddressIsAproxAndPhoneIsProvided()
+        public async Task AddressValidate_Should_ReturnTrue_WhenAddressIsApproxAndPhoneIsProvided()
         {
             //Arrange
-            var address = "rue de Rivoli 75004 Paris";
-            var recivingType = RecivingType.delivering;
-            var phone = "123456789";
+            const string address = "rue de Rivoli 75004 Paris";
+            const ReceivingType receivingType = ReceivingType.delivering;
+            const string phone = "123456789";
 
             //Act
-            var result = await StuartApi.Address.Validate(address, recivingType, phone).ConfigureAwait(false);
+            var result = await StuartApi.Address.Validate(address, receivingType, phone).ConfigureAwait(false);
 
             //Assert
-            result.Should().BeTrue();
+            result.Data.Should().BeTrue();
         }
 
         [TestMethod]
         public async Task AddressValidate_Should_ThrowException()
         {
             //Arrange
-            var address = "rue de Rivoli 75004 Paris";
-            var recivingType = RecivingType.delivering;
+            const string address = "rue de Rivoli 75004 Paris";
+            const ReceivingType receivingType = ReceivingType.delivering;
 
-            //Act & assert
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(() => StuartApi.Address.Validate(address, recivingType)).ConfigureAwait(false);
+            //Act
+            var result = await StuartApi.Address.Validate(address, receivingType).ConfigureAwait(false);
+
+            //Assert
+            result.Error.Should().NotBeNull();
         }
 
         [TestMethod]
         public async Task GetZoneCoverage_Should_ReturnCorrectData()
         {
             // Arrange
-            var city = "Paris";
-            var recivingType = RecivingType.delivering;
+            const string city = "Paris";
+            const ReceivingType receivingType = ReceivingType.delivering;
 
             // Act
-            var result = await StuartApi.Address.GetZoneCoverage(city, recivingType).ConfigureAwait(false);
+            var result = await StuartApi.Address.GetZoneCoverage(city, receivingType).ConfigureAwait(false);
 
             //Assert
-            result.Features.Should().NotBeEmpty();
-            result.Type.Should().Be("FeatureCollection");
+            result.Data.Features.Should().NotBeEmpty();
+            result.Data.Type.Should().Be("FeatureCollection");
         }
 
         [TestMethod]
@@ -72,8 +74,11 @@ namespace StuartDeliveryTests
             //Arrange
             var city = string.Empty;
 
-            //Act & assert
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(() => StuartApi.Address.GetZoneCoverage(city)).ConfigureAwait(false);
+            //Act
+            var result = await StuartApi.Address.GetZoneCoverage(city).ConfigureAwait(false);
+
+            //Assert
+            result.Error.Should().NotBeNull();
         }
 
         [TestMethod]
@@ -81,26 +86,29 @@ namespace StuartDeliveryTests
         public async Task GetParcelShops_Should_ReturnCorrectData()
         {
             //Arrange
-            var address = "156 rue de Charonne 75011 PARIS";
+            const string address = "156 rue de Charonne 75011 PARIS";
             var date = DateTime.UtcNow;
 
             //Act
             var result = await StuartApi.Address.GetParcelShops(address, date).ConfigureAwait(false);
 
             //Assert
-            result.Schedule.Should().NotBeEmpty();
-            result.Schedule.First().ParcelShop.Contact.Company.Should().Be("T29 Alimentation generale");
+            result.Data.Schedule.Should().NotBeEmpty();
+            result.Data.Schedule.First().ParcelShop.Contact.Company.Should().Be("T29 Alimentation generale");
         }
 
         [TestMethod]
-        public async Task GetParcelShops_Should_ThrowEnxception()
+        public async Task GetParcelShops_Should_ThrowException()
         {
             //Arrange
             var address = string.Empty;
             var date = DateTime.UtcNow;
 
-            //Act & assert
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(() => StuartApi.Address.GetParcelShops(address, date)).ConfigureAwait(false);
+            //Act
+            var result = await StuartApi.Address.GetParcelShops(address, date).ConfigureAwait(false);
+
+            //Assert
+            result.Error.Should().NotBeNull();
         }
     }
 }

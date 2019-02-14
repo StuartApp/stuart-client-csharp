@@ -8,12 +8,13 @@
     <Company>OrderYOYO, Stuart</Company>
     <Product>Stuart csharp client</Product>
     <Description>Stuart csharp client</Description>
-    <PackageReleaseNotes>Nullable package size type.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added support for new transportation type: "walk".
+Better errors handling.</PackageReleaseNotes>
     <PackageTags>stuart delivery</PackageTags>
     <PackageLicenseUrl>https://github.com/StuartApp/stuart-client-csharp/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/StuartApp/stuart-client-csharp</PackageProjectUrl>
     <NeutralLanguage>en</NeutralLanguage>
-    <Version>1.3.1</Version>
+    <Version>1.3.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <RootNamespace>stuart_client_csharp_tests</RootNamespace>
+    <RootNamespace>StuartDelivery.Tests</RootNamespace>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>

@@ -10,10 +10,10 @@ namespace StuartDelivery
     {
         private readonly WebClient _webClient;
         private readonly Environment _environment;
-        private OAuth2AccessToken oAuth2AccessToken;
+        private OAuth2AccessToken _oAuth2AccessToken;
 
-        private string _clientId;
-        private string _clientSecret;
+        private readonly string _clientId;
+        private readonly string _clientSecret;
 
         public Authenticator(Environment environment, string apiClientId, string apiClientSecret)
         {
@@ -25,13 +25,11 @@ namespace StuartDelivery
 
         public async Task<string> GetAccessToken()
         {
-            if (oAuth2AccessToken != null && !oAuth2AccessToken.IsExpired)
-                return oAuth2AccessToken.AccessToken;
-            else
-            {
-                oAuth2AccessToken = await GetNewAccessTokenAsync().ConfigureAwait(false);
-                return oAuth2AccessToken.AccessToken;
-            }
+            if (_oAuth2AccessToken != null && !_oAuth2AccessToken.IsExpired)
+                return _oAuth2AccessToken.AccessToken;
+
+            _oAuth2AccessToken = await GetNewAccessTokenAsync().ConfigureAwait(false);
+            return _oAuth2AccessToken.AccessToken;
         }
 
         public async Task<OAuth2AccessToken> GetNewAccessTokenAsync()

@@ -12,5 +12,14 @@ namespace StuartDelivery.Models
 
         [JsonProperty(PropertyName = "message")]
         public string Message { get; set; }
+
+        [JsonProperty(PropertyName = "data")]
+        public Data Data { get; set; }
+    }
+
+    public class Data
+    {
+        [JsonProperty(PropertyName = "deliveries")]
+        public string[] Deliveries { get; set; }
     }
 }

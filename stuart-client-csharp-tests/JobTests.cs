@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StuartDelivery.Models.Job.Enums;
 using JobRequest = StuartDelivery.Models.Job.Request;
 
-namespace StuartDeliveryTests
+namespace StuartDelivery.Tests
 {
     [TestClass]
     public class JobTests : BaseTests
@@ -23,7 +23,6 @@ namespace StuartDeliveryTests
         }
 
         [TestMethod]
-        //[Ignore("PickUpAt and DropOffAt error not handled")]
         public async Task CreateJob_Should_CreateAndReturnJobCorrectly()
         {
             //Arrange
@@ -33,18 +32,21 @@ namespace StuartDeliveryTests
             var result = await StuartApi.Job.CreateJob(jobRequest).ConfigureAwait(false);
 
             //Assert
-            result.Id.Should().BeGreaterThan(0);
+            result.Data.Id.Should().BeGreaterThan(0);
         }
 
         [TestMethod]
-        public async Task CreateJob_Should_ThrowException()
+        public async Task CreateJob_Should_ContainError()
         {
             //Arrange
             var jobRequest = CreateJob();
             jobRequest.Job.TransportType = TransportType.car;
 
-            //Act & assert
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(() => StuartApi.Job.CreateJob(jobRequest)).ConfigureAwait(false);
+            //Act
+            var result = await StuartApi.Job.CreateJob(jobRequest).ConfigureAwait(false);
+
+            //Assert
+            result.Error.Should().NotBeNull();
         }
 
         [TestMethod]
@@ -52,26 +54,27 @@ namespace StuartDeliveryTests
         {
             //Arrange
             var jobRequest = CreateJob();
-            jobRequest.Job.DropOffs.First().ClientReference = "Order_ID#1234_3";
-            jobRequest.Job.DropOffs.Last().ClientReference = "Order_ID#1234_4";
 
             //Act
             var result = await StuartApi.Job.RequestJobPricing(jobRequest).ConfigureAwait(false);
 
             //Assert
-            result.Amount.Should().BeGreaterThan(0);
-            result.Currency.Should().Be("EUR");
+            result.Data.Amount.Should().BeGreaterThan(0);
+            result.Data.Currency.Should().Be("EUR");
         }
 
         [TestMethod]
-        public async Task RequestJobPricing_Should_ThrowException()
+        public async Task RequestJobPricing_Should_ContainError()
         {
             //Arrange
             var jobRequest = CreateJob();
             jobRequest.Job.TransportType = TransportType.car;
 
-            //Act & assert
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(() => StuartApi.Job.RequestJobPricing(jobRequest)).ConfigureAwait(false);
+            //Act
+            var result = await StuartApi.Job.RequestJobPricing(jobRequest).ConfigureAwait(false);
+
+            //Assert
+            result.Error.Should().NotBeNull();
         }
 
         [TestMethod]
@@ -84,18 +87,21 @@ namespace StuartDeliveryTests
             var result = await StuartApi.Job.ValidateParameters(jobRequest).ConfigureAwait(false);
 
             //Assert
-            result.Should().BeTrue();
+            result.Data.Should().BeTrue();
         }
 
         [TestMethod]
-        public async Task ValidateParameters_Should_ThrowException()
+        public async Task ValidateParameters_Should_ContainError()
         {
             //Arrange
             var jobRequest = CreateJob();
             jobRequest.Job.TransportType = TransportType.car;
 
-            //Act & assert
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(() => StuartApi.Job.ValidateParameters(jobRequest)).ConfigureAwait(false);
+            //Act
+            var result = await StuartApi.Job.ValidateParameters(jobRequest).ConfigureAwait(false);
+
+            //Assert
+            result.Error.Should().NotBeNull();
         }
 
         [TestMethod]
@@ -108,18 +114,21 @@ namespace StuartDeliveryTests
             var result = await StuartApi.Job.RequestEta(jobRequest).ConfigureAwait(false);
 
             //Assert
-            result.Should().BeGreaterThan(0);
+            result.Data.Should().BeGreaterThan(0);
         }
 
         [TestMethod]
-        public async Task RequestEta_Should_ThrowException()
+        public async Task RequestEta_Should_ContainError()
         {
             //Arrange
             var jobRequest = CreateJob();
             jobRequest.Job.TransportType = TransportType.car;
 
-            //Act & assert
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(() => StuartApi.Job.RequestEta(jobRequest)).ConfigureAwait(false);
+            //Act
+            var result = await StuartApi.Job.RequestEta(jobRequest).ConfigureAwait(false);
+
+            //Assert
+            result.Error.Should().NotBeNull();
         }
 
         [TestMethod]
@@ -127,22 +136,25 @@ namespace StuartDeliveryTests
         {
             //Arrange
             var jobRequest = CreateJob();
-            var job = await StuartApi.Job.CreateJob(jobRequest).ConfigureAwait(false);
+            var job = (await StuartApi.Job.CreateJob(jobRequest).ConfigureAwait(false)).Data;
 
             //Act
             var result = await StuartApi.Job.GetJob(job.Id).ConfigureAwait(false);
 
             //Assert
-            result.Deliveries.Should().NotBeEmpty();
-            result.Distance.Should().BeGreaterThan(0);
-            result.PackageType.Should().Be(PackageSizeType.large);
+            result.Data.Deliveries.Should().NotBeEmpty();
+            result.Data.Distance.Should().BeGreaterThan(0);
+            result.Data.PackageType.Should().Be(PackageSizeType.large);
         }
 
         [TestMethod]
-        public async Task GetJob_Should_ThrowException()
+        public async Task GetJob_Should_ContainError()
         {
-            //Act & assert
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(() => StuartApi.Job.GetJob(123)).ConfigureAwait(false);
+            //Act
+            var result = await StuartApi.Job.GetJob(123).ConfigureAwait(false);
+
+            //Assert
+            result.Error.Should().NotBeNull();
         }
 
         [TestMethod]
@@ -157,7 +169,7 @@ namespace StuartDeliveryTests
             var result = await StuartApi.Job.GetJobs().ConfigureAwait(false);
 
             //Assert
-            result.Should().NotBeEmpty();
+            result.Data.Should().NotBeEmpty();
         }
 
         [TestMethod]
@@ -167,7 +179,7 @@ namespace StuartDeliveryTests
             var result = await StuartApi.Job.GetJobs("finished").ConfigureAwait(false);
 
             //Assert
-            result.Where(x => x.Status != "finished").Should().BeEmpty();
+            result.Data.Where(x => x.Status != "finished").Should().BeEmpty();
         }
 
         [TestMethod]
@@ -185,36 +197,40 @@ namespace StuartDeliveryTests
             var resultFromPage2 = await StuartApi.Job.GetJobs(page: 2, perPage: 1).ConfigureAwait(false);
 
             //Assert
-            resultFromPage1.Count().Should().Be(1);
-            resultFromPage2.Count().Should().Be(1);
-            resultFromPage1.First().Id.Should().NotBe(resultFromPage2.First().Id);
+            resultFromPage1.Data.Count().Should().Be(1);
+            resultFromPage2.Data.Count().Should().Be(1);
+            resultFromPage1.Data.First().Id.Should().NotBe(resultFromPage2.Data.First().Id);
         }
 
         [TestMethod]
         public async Task GetSchedulingSlots_Should_ReturnSchedulingSlotsCorrectly()
         {
             //Arrange
-            var city = "Paris";
-            var type = ScheduleType.pickup;
+            const string city = "Paris";
+            const ScheduleType type = ScheduleType.pickup;
             var date = DateTime.Now.AddMinutes(30);
 
             //Act
             var result = await StuartApi.Job.GetSchedulingSlots(city, type, date).ConfigureAwait(false);
 
             //Assert
-            result.Slots.Should().NotBeEmpty();
+            result.Data.Slots.Should().NotBeEmpty();
+            result.Error.Should().BeNull();
         }
 
         [TestMethod]
-        public async Task GetSchedulingSlots_Should_ThrowException()
+        public async Task GetSchedulingSlots_Should_ContainError()
         {
             //Arrange
-            var city = "Warsaw";
-            var type = ScheduleType.pickup;
+            const string city = "Warsaw";
+            const ScheduleType type = ScheduleType.pickup;
             var date = DateTime.Now.AddMinutes(30);
 
-            //Act & assert
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(() => StuartApi.Job.GetSchedulingSlots(city, type, date)).ConfigureAwait(false);
+            //Act
+            var result = await StuartApi.Job.GetSchedulingSlots(city, type, date).ConfigureAwait(false);
+
+            //Assert
+            result.Error.Should().NotBeNull();
         }
 
         [TestMethod]
@@ -222,20 +238,23 @@ namespace StuartDeliveryTests
         public async Task GetDriversPhone_Should_ReturnDriverPhoneCorrectly()
         {
             //Arrange
-            var job = await StuartApi.Job.GetJobs().ConfigureAwait(false);
+            var job = (await StuartApi.Job.GetJobs().ConfigureAwait(false)).Data;
 
             //Act
             var result = await StuartApi.Job.GetDriversPhone(job.Last().Deliveries.First().Id).ConfigureAwait(false);
 
             //Assert
-            result.Should().NotBeEmpty();
+            result.Data.Should().NotBeEmpty();
         }
 
         [TestMethod]
-        public async Task GetDriversPhone_Should_ThrowException()
+        public async Task GetDriversPhone_Should_ContainError()
         {
-            //Act & assert
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(() => StuartApi.Job.GetDriversPhone(0)).ConfigureAwait(false);
+            //Act
+            var result = await StuartApi.Job.GetDriversPhone(0).ConfigureAwait(false);
+
+            //Assert
+            result.Error.Should().NotBeNull();
         }
 
         [TestMethod]
@@ -243,8 +262,9 @@ namespace StuartDeliveryTests
         {
             //Arrange
             var jobRequest = CreateJob();
-            var job = await StuartApi.Job.CreateJob(jobRequest).ConfigureAwait(false);
-            var updatedClientReference = "UPDATED_ID";
+            var job = (await StuartApi.Job.CreateJob(jobRequest).ConfigureAwait(false)).Data;
+            const string updatedClientReference = "UPDATED_ID";
+
             var updatedJob = new JobRequest.UpdateJobRequest
             {
                 Job = new JobRequest.UpdatedJob
@@ -265,7 +285,7 @@ namespace StuartDeliveryTests
             var updateResult = await StuartApi.Job.GetJob(job.Id).ConfigureAwait(false);
 
             //Assert
-            updateResult.Deliveries.First().ClientReference.Should().Be(updatedClientReference);
+            updateResult.Data.Deliveries.First().ClientReference.Should().Be(updatedClientReference);
         }
 
         [TestMethod]
@@ -280,21 +300,24 @@ namespace StuartDeliveryTests
         {
             //Arrange
             var jobRequest = CreateJob();
-            var job = await StuartApi.Job.CreateJob(jobRequest).ConfigureAwait(false);
+            var job = (await StuartApi.Job.CreateJob(jobRequest).ConfigureAwait(false)).Data;
 
             //Act
             await StuartApi.Job.CancelJob(job.Id);
             var canceledJob = await StuartApi.Job.GetJob(job.Id).ConfigureAwait(false);
 
             //Assert
-            canceledJob.Status.Should().Be("canceled");
+            canceledJob.Data.Status.Should().Be("canceled");
         }
 
         [TestMethod]
-        public async Task CancelJob_Should_ThrowException()
+        public async Task CancelJob_Should_ContainError()
         {
-            //Act & assert
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(() => StuartApi.Job.CancelJob(0)).ConfigureAwait(false);
+            //Act
+            var result = await StuartApi.Job.CancelJob(0).ConfigureAwait(false);
+
+            //Assert
+            result.Error.Should().NotBeNull();
         }
 
         [TestMethod]
@@ -302,23 +325,26 @@ namespace StuartDeliveryTests
         {
             //Arrange
             var jobRequest = CreateJob();
-            var job = await StuartApi.Job.CreateJob(jobRequest).ConfigureAwait(false);
+            var job = (await StuartApi.Job.CreateJob(jobRequest).ConfigureAwait(false)).Data;
 
             //Act
             await StuartApi.Job.CancelDelivery(job.Deliveries.First().Id).ConfigureAwait(false);
             var canceledDeliveryJob = await StuartApi.Job.GetJob(job.Id).ConfigureAwait(false);
 
             //Assert
-            canceledDeliveryJob.Status.Should().NotBe("canceled");
-            canceledDeliveryJob.Deliveries.First().Status.Should().Be("cancelled");
-            canceledDeliveryJob.Deliveries.Last().Status.Should().NotBe("cancelled");
+            canceledDeliveryJob.Data.Status.Should().NotBe("canceled");
+            canceledDeliveryJob.Data.Deliveries.First().Status.Should().Be("cancelled");
+            canceledDeliveryJob.Data.Deliveries.Last().Status.Should().NotBe("cancelled");
         }
 
         [TestMethod]
-        public async Task CancelDelivery_Should_ThrowException()
+        public async Task CancelDelivery_Should_ContainError()
         {
-            //Act & assert
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(() => StuartApi.Job.CancelDelivery(0)).ConfigureAwait(false);
+            //Act
+            var result = await StuartApi.Job.CancelDelivery(0).ConfigureAwait(false);
+
+            //Assert
+            result.Error.Should().NotBeNull();
         }
 
         private JobRequest.JobRequest CreateJob()
