@@ -5,7 +5,7 @@ namespace StuartDelivery.Models.Job.Response
     public class SimplePricing
     {
         /// <summary>
-        /// Price VAT exluded
+        /// Price VAT excluded
         /// </summary>
         [JsonProperty(PropertyName = "amount")]
         [JsonRequired]

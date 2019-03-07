@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using StuartDelivery.Converters;
+using Newtonsoft.Json.Converters;
 
 namespace StuartDelivery.Models.Job.Response
 {
     public class SchedulingSlots
     {
         [JsonProperty(PropertyName = "date")]
-        [JsonConverter(typeof(StuartDateTimeConverter))]
-        public DateTime Date { get; set; }
+        [JsonConverter(typeof(IsoDateTimeConverter))]
+        public DateTimeOffset Date { get; set; }
 
         [JsonProperty(PropertyName = "zone")]
         public Zone Zone { get; set; }

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace StuartDelivery.Models.Job.Response
 {
@@ -22,13 +24,15 @@ namespace StuartDelivery.Models.Job.Response
         /// A datetime (ISO 8601) indicating when your package has been picked.
         /// </summary>
         [JsonProperty(PropertyName = "picked_at")]
-        public string PickedAt { get; set; }
+        [JsonConverter(typeof(IsoDateTimeConverter))]
+        public DateTimeOffset? PickedAt { get; set; }
 
         /// <summary>
         /// A datetime(ISO 8601) indicating when your package has been delivered.
         /// </summary>
         [JsonProperty(PropertyName = "delivered_at")]
-        public string DeliveredAt { get; set; }
+        [JsonConverter(typeof(IsoDateTimeConverter))]
+        public DateTimeOffset? DeliveredAt { get; set; }
 
         /// <summary>
         /// The Delivery tracking URL.
@@ -62,6 +66,7 @@ namespace StuartDelivery.Models.Job.Response
         [JsonProperty(PropertyName = "cancellation")]
         public Cancellation Cancellation { get; set; }
 
+        [JsonProperty(PropertyName = "proof")]
         public Proof Proof { get; set; }
     }
 }

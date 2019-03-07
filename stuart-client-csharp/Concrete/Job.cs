@@ -66,7 +66,7 @@ namespace StuartDelivery.Concrete
         {
             try
             {
-                var response = await _webClient.PostAsync($"/v2/jobs", job).ConfigureAwait(false);
+                var response = await _webClient.PostAsync("/v2/jobs", job).ConfigureAwait(false);
                 var result = new Result<JobResponse.Job>();
 
                 if (response.IsSuccessStatusCode)
@@ -184,7 +184,7 @@ namespace StuartDelivery.Concrete
         {
             try
             {
-                var response = await _webClient.PostAsync($"/v2/jobs/eta", job).ConfigureAwait(false);
+                var response = await _webClient.PostAsync("/v2/jobs/eta", job).ConfigureAwait(false);
                 var result = new Result<int>();
 
                 if (response.IsSuccessStatusCode)
@@ -207,7 +207,7 @@ namespace StuartDelivery.Concrete
         {
             try
             {
-                var response = await _webClient.PostAsync($"/v2/jobs/pricing", job).ConfigureAwait(false);
+                var response = await _webClient.PostAsync("/v2/jobs/pricing", job).ConfigureAwait(false);
                 var result = new Result<JobResponse.SimplePricing>();
 
                 if (response.IsSuccessStatusCode)
@@ -248,7 +248,7 @@ namespace StuartDelivery.Concrete
         {
             try
             {
-                var response = await _webClient.PostAsync($"/v2/jobs/validate", job).ConfigureAwait(false);
+                var response = await _webClient.PostAsync("/v2/jobs/validate", job).ConfigureAwait(false);
                 var result = new Result<bool>();
 
                 if (response.IsSuccessStatusCode)
