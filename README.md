@@ -7,7 +7,7 @@ For a complete documentation of all endpoints offered by the Stuart API, you can
 Via NuGet Package Manager:
 
 ``` bash
-$ PM> Install-Package stuart-client-csharp -Version 1.3.1
+$ PM> Install-Package stuart-client-csharp -Version 1.3.3
 ```
 
 ## Usage
