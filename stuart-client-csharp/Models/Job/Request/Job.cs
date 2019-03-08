@@ -14,7 +14,7 @@ namespace StuartDelivery.Models.Job.Request
         /// </summary>
         [JsonProperty(PropertyName = "pickup_at")]
         [JsonConverter(typeof(IsoDateTimeConverter))]
-        public DateTime? PickUpAt { get; set; }
+        public DateTimeOffset? PickUpAt { get; set; }
 
         /// <summary>
         /// A datetime (ISO 8601) indicating when you want the package to be delivered.
@@ -22,13 +22,13 @@ namespace StuartDelivery.Models.Job.Request
         /// </summary>
         [JsonProperty(PropertyName = "dropoff_at")]
         [JsonConverter(typeof(IsoDateTimeConverter))]
-        public DateTime? DropOffAt { get; set; }
+        public DateTimeOffset? DropOffAt { get; set; }
 
         /// <summary>
         /// Accounting reference number.
         /// </summary>
-        [JsonProperty(PropertyName = "assigment_code")]
-        public string AssigmentCode { get; set; }
+        [JsonProperty(PropertyName = "assignment_code")]
+        public string AssignmentCode { get; set; }
 
         /// <summary>
         /// 🇫🇷 France only Which transport type you want for your Job. Mandatory if package_type is empty.
