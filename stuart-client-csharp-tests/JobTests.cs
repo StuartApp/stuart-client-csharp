@@ -353,7 +353,7 @@ namespace StuartDelivery.Tests
             {
                 Job = new JobRequest.Job
                 {
-                    AssigmentCode = "ACC861MM",
+                    AssignmentCode = "ACC861MM",
                     PickUps = new List<JobRequest.PickUp>
                     {
                         new JobRequest.PickUp
