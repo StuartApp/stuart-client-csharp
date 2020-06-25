@@ -15,7 +15,15 @@ Small cosmetic changes.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/StuartApp/stuart-client-csharp</PackageProjectUrl>
     <NeutralLanguage>en</NeutralLanguage>
     <Version>1.3.3</Version>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
