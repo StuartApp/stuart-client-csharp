@@ -2,7 +2,7 @@
 {
     public sealed class Environment
     {
-        private const string sandboxUrl = "https://sandbox-api.stuart.com";
+        private const string sandboxUrl = "https://api.sandbox.stuart.com";
         private const string productionUrl = "https://api.stuart.com";
 
         public Environment(string url) => BaseUrl = url;
