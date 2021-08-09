@@ -50,10 +50,13 @@ namespace StuartDelivery
             else
                 throw new HttpRequestException($"Access token request failed with message: {response.Content.ReadAsAsync<ErrorResponse>().Result.ErrorDescription}");
 
+            var createdAt = DateTimeOffset.FromUnixTimeSeconds(tokenResponse.CreatedAt);
+            var expiresAt = createdAt.AddSeconds(tokenResponse.ExpiresIn);
+
             return new OAuth2AccessToken()
             {
                 AccessToken = tokenResponse.AccessToken,
-                ExpireDate = DateTime.UtcNow.AddMinutes(tokenResponse.ExpiresIn),
+                ExpireDate = expiresAt.UtcDateTime,
                 Scope = tokenResponse.Scope,
                 TokenType = tokenResponse.TokenType
             };
