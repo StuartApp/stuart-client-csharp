@@ -11,9 +11,11 @@ namespace StuartDelivery
 
         private IAddress _address;
         private IJob _job;
+        private IWebhook _webhook;
 
         public IAddress Address { get { return _address ?? (_address = new Address(_client)); } }
         public IJob Job { get { return _job ?? (_job = new Job(_client)); } }
+        public IWebhook Webhook { get { return _webhook ?? (_webhook = new Webhook(_client)); } }
 
         public static StuartApi Initialize(Environment environment, string clientId, string clientSecret)
         {
