@@ -14,7 +14,7 @@ namespace StuartDelivery
         public WebClient(Environment environment)
         {
             _client = new HttpClient { BaseAddress = new Uri($"{environment.BaseUrl}") };
-            _client.DefaultRequestHeaders.Add("User-Agent", "stuart-client-csharp/1.3.1");
+            _client.DefaultRequestHeaders.Add("User-Agent", $"stuart-client-csharp/{Version.GetCurrent()}");
         }
 
         public void SetAuthorization(string token)
