@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using StuartDelivery.Models.Webhook.Enums;
 
 namespace StuartDelivery.Models.Webhook.Request
 {
@@ -13,7 +11,8 @@ namespace StuartDelivery.Models.Webhook.Request
 
         [JsonProperty(PropertyName = "topics")]
         [JsonRequired]
-        public string[] Topics { get; set; } = new string[0];
+        [JsonConverter(typeof(WebhookTopicArrayJsonConverter))]
+        public WebhookTopic[] Topics { get; set; } = new WebhookTopic[0];
 
         [JsonProperty(PropertyName = "enabled")]
         public bool Enabled { get; set; }

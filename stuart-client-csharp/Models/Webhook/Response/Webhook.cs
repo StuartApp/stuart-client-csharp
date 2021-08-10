@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
+using StuartDelivery.Models.Webhook.Enums;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace StuartDelivery.Models.Webhook.Response
 {
@@ -28,10 +28,22 @@ namespace StuartDelivery.Models.Webhook.Response
         [JsonProperty(PropertyName = "authentication_key")]
         public string AuthenticationKey { get; set; }
 
-        // NOTE: Ignoring property for now because the Stuart API returns data inconsistent with the documentation
-        //       (i.e., should be array of strings, but is array of objects).
         [JsonProperty(PropertyName = "topics")]
+        private TopicContainer[] InnerTopics { get; set; } = new TopicContainer[0];
+
+        private class TopicContainer
+        {
+            [JsonProperty("name")]
+            public string Name { get; set; }
+        }
+
         [JsonIgnore]
-        public string[] Topics { get; set; } = new string[0];
+        public WebhookTopic[] Topics { get
+            {
+                return (InnerTopics ?? new TopicContainer[0])
+                    .Select(t => t.Name.FromApiString())
+                    .ToArray();
+            }
+        }
     }
 }
