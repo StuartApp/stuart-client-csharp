@@ -28,14 +28,16 @@ namespace StuartDelivery.Tests
 
             createResult.Data.Should().NotBeNull();
             createResult.Data.Id.Should().BeGreaterThan(0);
+            createResult.Data.Url.Should().Be(spec.Url);
 
             var infoResult = await StuartApi.Webhook.Get(createResult.Data.Id);
 
-            infoResult.Data.Id.Should().Equals(createResult.Data.Id);
-            infoResult.Data.Url.Should().Equals(spec.Url);
-            infoResult.Data.Enabled.Should().Equals(spec.Enabled);
-            infoResult.Data.AuthenticationHeader.Should().Equals(spec.AuthenticationHeader);
-            infoResult.Data.AuthenticationKey.Should().Equals(spec.AuthenticationKey);
+            infoResult.Data.Should().NotBeNull();
+            infoResult.Data.Id.Should().Be(createResult.Data.Id);
+            infoResult.Data.Url.Should().Be(spec.Url);
+            infoResult.Data.Enabled.Should().Be(spec.Enabled);
+            infoResult.Data.AuthenticationHeader.Should().Be(spec.AuthenticationHeader);
+            infoResult.Data.AuthenticationKey.Should().Be(spec.AuthenticationKey);
 
             var deleteResult = await StuartApi.Webhook.Delete(createResult.Data.Id);
 
@@ -75,7 +77,7 @@ namespace StuartDelivery.Tests
                     "driver/offline"
                 },
                 AuthenticationHeader = "X-My-Header",
-                AuthenticationKey = "abc123"
+                AuthenticationKey = "abc123" + _random.Next()
             };
         }
     }
